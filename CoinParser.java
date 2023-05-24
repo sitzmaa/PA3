@@ -3,10 +3,14 @@ import java.util.ArrayList;
 public class CoinParser {
     private int[] optimals; // optimal number of coins
     private int[] coinValues; // stored values of all coins, values that are not present are stored as 0
-    private final int MAX = Integer.MAX_VALUE; // max integer value
+    private final int MAX = Integer.MAX_VALUE/2; // max integer value
     private ArrayList<ArrayList<Integer>> configurations; // an arraylist that stores the optimal configurations
     
     // Constructor
+    /*
+     * Takes in an array of integers padded with 0s
+     * non zero indeces indicate the existence of a coin
+     */
     public CoinParser(int[] coinValues) {
         this.coinValues = coinValues;
         this.configurations = new ArrayList<ArrayList<Integer>>();
@@ -59,6 +63,7 @@ public class CoinParser {
         for (int j = 1; j < i; j++) {
             if (j < coinValues.length) {
                 if(coinValues[j] != 0) {
+
                     q2 = q;
                     q  = Integer.min(q, 1 + evaluate(i-j));
                     if (q != q2) {
@@ -83,13 +88,18 @@ public class CoinParser {
         }
         // holder will store where change occurs
         // therefore the the optimal configuration will consit of the configuration of i-holder and the value at holder
-        if (holder != 0) {
+        if (holder != 0 && holder < coinValues.length) {
             configurations.get(i).clear();
             combine(configurations.get(i), configurations.get(i-holder));
             configurations.get(i).add(coinValues[holder]);
+        } else if (holder != 0) {
+            configurations.get(i).clear();
+            combine(configurations.get(i), configurations.get(i-holder));
+            combine(configurations.get(i), configurations.get(holder));
         }
         // save the optimal value and return
         optimals[i] = q;
+        
         return q;
     }
 
